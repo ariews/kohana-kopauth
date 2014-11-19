@@ -3,9 +3,11 @@
 defined('SYSPATH') or die('No direct script access.');
 
 /**
- * Description of kopauth
- *
- * @author arie
+ * @package   Modules
+ * @category  Kopauth
+ * @author    Fady Khalife
+ * @author    arie
+ * @link      http://opauth.org
  */
 
 class Kohana_Kopauth extends Opauth
