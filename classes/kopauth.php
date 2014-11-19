@@ -20,7 +20,7 @@ class Kopauth extends Opauth
     /**
      * @var string
      */
-    public $session_key = 'kopauthed';
+    public $session_key;
 
     /**
      * @var array
@@ -39,6 +39,7 @@ class Kopauth extends Opauth
     {
         $this->config = Kohana::$config->load('kopauth')->as_array();
         $this->session = Session::instance();
+        $this->session_key = $this->config['session_key'];
 
         // Init our auth session as an array by default
         $auth_session = $this->session->get($this->session_key);

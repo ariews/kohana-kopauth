@@ -18,7 +18,7 @@ return array(
      * eg. if Opauth is reached via http://example.org/auth/, path is '/auth/'
      * if Opauth is reached via http://auth.example.org/, path is '/'
      */
-    'path' => '/kopauth/authenticate/',
+    'path' => Route::url('kopauth', array('action' => 'authenticate')) . '/',
 
     /**
      * Callback transport, for sending of $auth response
@@ -29,6 +29,11 @@ return array(
      *            (eg. IE8/IE9 has 2083-char limit)
      */
     'callback_transport' => 'session',
+
+    /**
+     * Session key
+     */
+    'session_key' => 'kopauth-session-key',
 
     /**
      * Strategy
