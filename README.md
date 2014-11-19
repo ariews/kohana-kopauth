@@ -59,7 +59,7 @@ The Kopauth class has additional methods to assist with authentication integrati
     
 ## Compatibility
 
-This module is compatible with Kohana 3.3
+This module is compatible with Kohana 3.2
 
 Included [Opauth](http://opauth.org/) version is 0.4.4
 
