@@ -15,32 +15,32 @@ class Controller_Kopauth_Auth extends Controller
     {
         $kopauth = Kopauth::instance();
         $strategy = $this->request->param('strategy');
-        
+
         // If missing strategy param or their already authenticated just return to start screen
         if (empty($strategy) OR $kopauth->is_authenticated($strategy))
         {
             $this->redirect(Route::url('kopauth', null, true));
         }
-        
+
         // Run opauth
         $kopauth->run();
-        
+
         // If it's a callback handle the response as required.
         if ($kopauth->is_callback())
         {
             $response = $kopauth->get_response();
-            
+
             if (array_key_exists('error', $response))
             {
                 // There is an error, set error flash message and direct back to the beginning
                 Session::instance()->set('kopauth_error', $response['error']);
             }
-            
+
             // Redirect to start to see authed session or error flash message
             $this->redirect(Route::url('kopauth', null, true));
         }
     }
-    
+
     /**
      * Render view to display all configured providers.
      */
@@ -54,10 +54,10 @@ class Controller_Kopauth_Auth extends Controller
                 array(':uri' => $this->request->uri())
             );
         }
-        
+
         $this->response->body(View::factory('kopauth/providers')->render());
     }
-    
+
     /**
      * Render view to display users session data for an authenticated provider.
      */
@@ -71,9 +71,9 @@ class Controller_Kopauth_Auth extends Controller
                 array(':uri' => $this->request->uri())
             );
         }
-        
+
         $strategy = $this->request->param('strategy');
-        
+
         if ( ! Kopauth::instance()->is_authenticated($strategy))
         {
             // Not authenticated for passed provide, redirect to auth
@@ -83,16 +83,16 @@ class Controller_Kopauth_Auth extends Controller
             ), true);
             $this->redirect($auth_route);
         }
-        
+
         // Get the session data
         $data = Kopauth::instance()->get_authenticated($strategy);
-        
+
         // Render with data
         $this->response->body(View::factory('kopauth/sessiondata')
             ->set('data', $data)
             ->render());
     }
-    
+
     /**
      * Destroy session data for a provider
      */
@@ -101,5 +101,10 @@ class Controller_Kopauth_Auth extends Controller
         Kopauth::instance()->clear_authenticated($this->request->param('strategy'));
         $this->redirect(Route::url('kopauth', null, true));
     }
+
+    protected function redirect($url)
+    {
+        $this->request->redirect($url);
+    }
 }
-    
+

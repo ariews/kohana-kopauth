@@ -11,27 +11,27 @@ class Kopauth extends Opauth
      * @var array
      */
     public $config;
-    
+
     /**
      * @var Kohana_Session
      */
     public $session;
-    
+
     /**
      * @var string
      */
     public $session_key = 'kopauthed';
-    
+
     /**
      * @var array
      */
     private $_response;
-    
+
     /**
      * @var Core_Kopauth
      */
     protected static $instance;
-    
+
     /**
      * Construct Opauth with module config and setup class specifics.
      */
@@ -39,7 +39,7 @@ class Kopauth extends Opauth
     {
         $this->config = Kohana::$config->load('kopauth')->as_array();
         $this->session = Session::instance();
-        
+
         // Init our auth session as an array by default
         $auth_session = $this->session->get($this->session_key);
         if ( ! $auth_session)
@@ -49,7 +49,7 @@ class Kopauth extends Opauth
 
         parent::__construct($this->config, FALSE);
     }
-    
+
     /**
      * @return Core_Kopauth
      */
@@ -61,7 +61,7 @@ class Kopauth extends Opauth
         }
         return self::$instance;
     }
-    
+
     /**
      * Assign opauth expected route params then run.
      */
@@ -72,7 +72,7 @@ class Kopauth extends Opauth
 
         parent::run();
     }
-    
+
     /**
      * Create a response from out callback data, if successful save the user response.
      */
@@ -80,7 +80,7 @@ class Kopauth extends Opauth
     {
         // Fetch auth response, based on transport configuration for callback
         switch($this->env['callback_transport'])
-        { 
+        {
             case 'session':
                 // PHP >= 5.4.0
                 // if (session_status() == PHP_SESSION_NONE)
@@ -104,7 +104,7 @@ class Kopauth extends Opauth
                 throw new Kohana_Exception('Unsupported callback_transport', NULL, Kohana_Exception::$php_errors[E_ERROR]);
             break;
         }
-        
+
         // Process the response further if there is no error
         if (is_array($this->_response) AND ! array_key_exists('error', $this->_response))
         {
@@ -112,12 +112,12 @@ class Kopauth extends Opauth
                 ? $this->_response['auth']['provider']
                 : 'Unknown';
             $timestamp = date('c');
-            
+
             // Check we have expected response values
-            if (empty($this->_response['auth']) OR 
-                empty($this->_response['timestamp']) OR 
-                empty($this->_response['signature']) OR 
-                empty($this->_response['auth']['provider']) OR 
+            if (empty($this->_response['auth']) OR
+                empty($this->_response['timestamp']) OR
+                empty($this->_response['signature']) OR
+                empty($this->_response['auth']['provider']) OR
                 empty($this->_response['auth']['uid']))
             {
                 $this->_response = array(
@@ -148,7 +148,7 @@ class Kopauth extends Opauth
             }
         }
     }
-    
+
     /**
      * Returns current response
      * @return  array
@@ -166,10 +166,10 @@ class Kopauth extends Opauth
                 'timestamp' => date('c')
             );
         }
-        
+
         return $this->_response;
     }
-    
+
     /**
      * Check if the current run is a callback.
      * @return  boolean
@@ -178,18 +178,18 @@ class Kopauth extends Opauth
     {
         return Arr::get($this->env['params'], 'strategy') == 'callback';
     }
-    
+
     /**
      * Check for an authenticated provider session.
      * Checks through all  unless a $strategy_url_name is passed.
      * @param  string  $strategy_url_name
-     * @return boolean 
+     * @return boolean
      */
     public function is_authenticated($strategy_url_name = NULL)
     {
         $auth_session = $this->session->get($this->session_key);
         $valid_provider = isset($this->strategyMap[$strategy_url_name]['name']);
-        
+
         if ($strategy_url_name AND $valid_provider)
         {
             return isset($auth_session[$this->strategyMap[$strategy_url_name]['name']]['uid']);
@@ -202,20 +202,20 @@ class Kopauth extends Opauth
                 if (isset($session['uid'])) return TRUE;
             }
         }
-        
+
         return FALSE;
-    }     
-     
+    }
+
     /**
      * Store the current authenticated response to the session.
      */
     public function store_authenticated()
     {
-        $auth_session = $this->session->get($this->session_key);       
+        $auth_session = $this->session->get($this->session_key);
         $auth_session[$this->_response['auth']['provider']] = $this->_response['auth'];
         $this->session->set($this->session_key, $auth_session);
     }
-    
+
     /**
      * Get stored authenticated responses from the session.
      * Returns all in an array unless a $strategy_url_name is passed.
@@ -226,11 +226,11 @@ class Kopauth extends Opauth
     {
         $auth_session = $this->session->get($this->session_key);
         $valid_provider = isset($this->strategyMap[$strategy_url_name]['name']);
-        
+
         if ($strategy_url_name AND $valid_provider)
         {
             $authenticated = isset($auth_session[$this->strategyMap[$strategy_url_name]['name']]);
-            
+
             if ($authenticated)
             {
                 return $auth_session[$this->strategyMap[$strategy_url_name]['name']];
@@ -239,7 +239,7 @@ class Kopauth extends Opauth
             {
                 return NULL;
             }
-            
+
         }
         else if( ! $strategy_url_name)
         {
@@ -248,10 +248,10 @@ class Kopauth extends Opauth
                 return $auth_session;
             }
         }
-        
+
         return NULL;
     }
-    
+
     /**
      * Clear stored authenticated session data.
      * Clears all data unless a $strategy_url_name is passed.
@@ -261,7 +261,7 @@ class Kopauth extends Opauth
     {
         $auth_session = $this->session->get($this->session_key);
         $valid_provider = isset($this->strategyMap[$strategy_url_name]['name']);
-        
+
         if ($strategy_url_name AND $valid_provider)
         {
             unset($auth_session[$this->strategyMap[$strategy_url_name]['name']]);

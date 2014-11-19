@@ -7,8 +7,8 @@
  */
 Route::set('kopauth', 'kopauth(/<action>(/<strategy>(/<callback>)))')
     ->defaults(array(
-        'directory'  => 'Kopauth',
-        'controller' => 'Auth',
+        'directory'  => 'kopauth',
+        'controller' => 'auth',
         'action'     => 'providers'
     ));
 
